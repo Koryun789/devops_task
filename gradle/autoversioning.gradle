@@ -1,0 +1,48 @@
+ext.semanticVersion = SemanticVersion.from(version as String)
+project.ext.'release.useAutomaticVersion' = 'true'
+project.ext.'release.releaseVersion' = semanticVersion.releaseVersion()
+project.ext.'release.newVersion' = semanticVersion.newVersion()
+
+class SemanticVersion {
+    int major
+    int minor
+    int bugfix
+    String extension
+
+    SemanticVersion newVersion(String releaseType = "bugfix") {
+        println "releaseType"
+        println releaseType
+        if (releaseType == "major") {
+            return new SemanticVersion(major: major + 1, minor: 0, bugfix: 0, extension: "SNAPSHOT")
+        } else if (releaseType == "minor") {
+            return new SemanticVersion(major: major, minor: minor + 1, bugfix: 0, extension: "SNAPSHOT")
+        } else {
+            return new SemanticVersion(major: major, minor: minor, bugfix: bugfix + 1, extension: "SNAPSHOT")
+        }
+    }
+
+    public static SemanticVersion from(String versionString) {
+        def splitted = versionString.split('[\\.-]')
+        return new SemanticVersion(major: Integer.parseInt(splitted[0]),
+                minor: Integer.parseInt(splitted[1]),
+                bugfix: Integer.parseInt(splitted[2]),
+                extension: splitted.length != 4 ?: splitted[3])
+    }
+
+    public SemanticVersion releaseVersion() {
+        if (extension == null) {
+            return this
+        } else {
+            return new SemanticVersion(major: major, minor: minor, bugfix: bugfix, extension: null);
+        }
+    }
+
+    public SemanticVersion semantic() {
+        return new SemanticVersion(major: major, minor: minor, bugfix: bugfix, extension: null);
+    }
+
+
+    String toString() {
+        "${major}.${minor}.${bugfix}${extension ? '-' + extension.toString() : ''}"
+    }
+}
