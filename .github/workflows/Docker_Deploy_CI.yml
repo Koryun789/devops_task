@@ -19,7 +19,7 @@ jobs:
       with:
         github-token: ${{ secrets.DOCKER_REGISTRY }}
         image-name: gradle-app
-        image-tag: latest
+        image-tag: latest (date + %s)
 
     - name: Deploy Docker by SSH
       uses: appleboy/ssh-action@v0.1.4
