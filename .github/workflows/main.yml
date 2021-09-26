@@ -19,7 +19,7 @@ jobs:
       with:
         github-token: ${{ secrets.DOCKER_REGISTRY }}
         image-name: gradle-app
-        image-tag: latest (date + %s)
+        image-tag: latest
 
     - name: Deploy Docker by SSH
       uses: appleboy/ssh-action@v0.1.4
@@ -27,7 +27,6 @@ jobs:
         DOCKER_PATH: docker.pkg.github.com
         DOCKER_USER: Koryun789
         GITHUB_REPOSITORY: Koryun789/devops_task
-
         DOCKER_CONTAINER_NAME: my-gradle-app
       with:
         host: 104.154.117.252
