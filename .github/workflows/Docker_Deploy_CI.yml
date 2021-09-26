@@ -1,0 +1,40 @@
+name: Docker Deploy CI
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+
+  Docker_Ship_and_Deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Git checkout
+      uses: actions/checkout@v2
+
+    - name: Publish Docker Image to GitHub Registry
+      uses: TilBlechschmidt/gp-docker-action@v0.2-alpha
+      with:
+        github-token: ${{ secrets.DOCKER_REGISTRY }}
+        image-name: gradle-app
+        image-tag: latest
+
+    - name: Deploy Docker by SSH
+      uses: appleboy/ssh-action@v0.1.4
+      env:
+        DOCKER_PATH: docker.pkg.github.com
+        DOCKER_USER: Koryun789
+        GITHUB_REPOSITORY: Koryun789/devops_task
+
+        DOCKER_CONTAINER_NAME: my-gradle-app
+      with:
+        host: 104.154.117.252
+        username: task
+        password: ${{ secrets.HOST_PASSWD }}
+        script: |
+          docker login ${{ env.DOCKER_PATH }} -u ${{ env.DOCKER_USER }} -p ${{ secrets.DOCKER_REGISTRY }}
+          docker rm -f ${{ env.DOCKER_CONTAINER_NAME }}
+          docker run -d --name ${{ env.DOCKER_CONTAINER_NAME }} -p:8998:8998 ${{ env.DOCKER_PATH }}/${{ env.GITHUB_REPOSITORY }}/gradle-app:latest
+       
